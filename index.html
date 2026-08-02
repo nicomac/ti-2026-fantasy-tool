@@ -88,6 +88,15 @@
       line-height: 1.5;
     }
 
+    .sub a {
+      color: var(--c-elemental);
+      text-decoration: none;
+    }
+
+    .sub a:hover {
+      text-decoration: underline;
+    }
+
     .app-section {
       margin-bottom: 32px;
     }
@@ -474,7 +483,9 @@
     <header>
       <div class="eyebrow">TI 2026 · FANTASY GUIDE</div>
       <h1>Fantasy <span>Helper Tool</span></h1>
-      <p class="sub">Suggests fantasy title prefixes based on previous tournament stats.</p>
+      <p class="sub">Stats based on the <a
+          href="https://www.reddit.com/r/DotA2/comments/1vble84/fantasy_league_2026_guide/" target="_blank"
+          rel="noopener">Fantasy League 2026 Guide</a> by u/Maroomm.</p>
     </header>
 
     <section class="app-section">
@@ -500,8 +511,6 @@
       <div class="overall-section" id="overall-section"></div>
     </section>
 
-    <footer>Stats based on the <a href="https://www.reddit.com/r/DotA2/comments/1vble84/fantasy_league_2026_guide/"
-        target="_blank" rel="noopener">Fantasy League 2026 Guide</a> by u/Maroomm.</footer>
   </div>
 
   <script>
