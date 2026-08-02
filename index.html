@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prefix Suggestor — TI 2026 Fantasy Guide</title>
+  <title>Fantasy Helper Tool — TI 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
@@ -86,6 +86,25 @@
       font-size: 15px;
       max-width: 560px;
       line-height: 1.5;
+    }
+
+    .app-section {
+      margin-bottom: 32px;
+    }
+
+    .app-section .picker-row {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: .01em;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
     }
 
     .picker-row {
@@ -454,28 +473,32 @@
   <div class="wrap">
     <header>
       <div class="eyebrow">TI 2026 · FANTASY GUIDE</div>
-      <h1>Prefix <span>Suggestor</span></h1>
+      <h1>Fantasy <span>Helper Tool</span></h1>
       <p class="sub">Suggests fantasy title prefixes based on previous tournament stats.</p>
     </header>
 
-    <div class="picker-row">
-      <div class="picker">
-        <div class="picker-label"><span class="role-dot core"></span>Core team</div>
-        <select id="sel-core"></select>
+    <section class="app-section">
+      <div class="picker-row">
+        <div class="picker">
+          <div class="picker-label"><span class="role-dot core"></span>Core team</div>
+          <select id="sel-core"></select>
+        </div>
+        <div class="picker">
+          <div class="picker-label"><span class="role-dot mid"></span>Mid team</div>
+          <select id="sel-mid"></select>
+        </div>
+        <div class="picker">
+          <div class="picker-label"><span class="role-dot support"></span>Support team</div>
+          <select id="sel-support"></select>
+        </div>
       </div>
-      <div class="picker">
-        <div class="picker-label"><span class="role-dot mid"></span>Mid team</div>
-        <select id="sel-mid"></select>
-      </div>
-      <div class="picker">
-        <div class="picker-label"><span class="role-dot support"></span>Support team</div>
-        <select id="sel-support"></select>
-      </div>
-    </div>
+    </section>
 
-    <div class="results" id="results"></div>
-
-    <div class="overall-section" id="overall-section"></div>
+    <section class="app-section">
+      <div class="section-title">Prefix Suggestion</div>
+      <div class="results" id="results"></div>
+      <div class="overall-section" id="overall-section"></div>
+    </section>
 
     <footer>Stats based on the <a href="https://www.reddit.com/r/DotA2/comments/1vble84/fantasy_league_2026_guide/"
         target="_blank" rel="noopener">Fantasy League 2026 Guide</a> by u/Maroomm.</footer>
