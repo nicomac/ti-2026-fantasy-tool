@@ -185,6 +185,7 @@
       border: 1px solid var(--border);
       border-radius: 7px;
       padding: 6px 8px;
+      min-height: 34px;
     }
 
     .banner-swatch {
@@ -257,7 +258,8 @@
       color: var(--text-dim);
       font-size: 12px;
       font-style: italic;
-      padding: 8px;
+      align-items: center;
+      line-height: 2.4;
     }
 
     .suggestion {
@@ -941,12 +943,50 @@
       Support: [{ stat: null, pct: 100 }, { stat: null, pct: 100 }, { stat: null, pct: 100 }]
     };
 
+    const STORAGE_KEY = "fantasyHelperTool.state";
+
+    function saveState() {
+      try {
+        const state = {
+          teams: {
+            core: document.getElementById("sel-core").value,
+            mid: document.getElementById("sel-mid").value,
+            support: document.getElementById("sel-support").value
+          },
+          banners: BANNER_STATE
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) { /* storage unavailable, fail silently */ }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) { return null; }
+    }
+
+    const SAVED_STATE = loadState();
+    if (SAVED_STATE && SAVED_STATE.banners) {
+      ["Core", "Mid", "Support"].forEach(role => {
+        if (SAVED_STATE.banners[role]) {
+          SAVED_STATE.banners[role].forEach((b, idx) => {
+            if (BANNER_STATE[role][idx] && b) {
+              BANNER_STATE[role][idx].stat = b.stat ?? BANNER_STATE[role][idx].stat;
+              BANNER_STATE[role][idx].pct = (typeof b.pct === "number") ? b.pct : BANNER_STATE[role][idx].pct;
+            }
+          });
+        }
+      });
+    }
+
     function initBanners(role, containerId) {
       const colors = ROLE_BANNERS[role];
       const container = document.getElementById(containerId);
       container.innerHTML = colors.map((color, idx) => {
         if (role === "Mid" && color === "Blue") {
-          return `<div class="banner disabled">No data available for this stat (Blue) — Runes or you cooked!</div>`;
+          return `<div class="banner disabled"><span class="banner-swatch blue"></span>Runes or you cooked</div>`;
         }
         const options = STAT_NAMES[color];
         const state = BANNER_STATE[role][idx];
@@ -977,6 +1017,7 @@
           } else {
             BANNER_STATE[r][i].stat = e.target.value;
           }
+          saveState();
           render();
         });
       });
@@ -1041,6 +1082,12 @@
       sel.innerHTML = TEAM_ORDER.map(t => `<option value="${t}">${t}</option>`).join("");
     }
     ["sel-core", "sel-mid", "sel-support"].forEach(populateSelect);
+
+    if (SAVED_STATE && SAVED_STATE.teams) {
+      if (SAVED_STATE.teams.core && TEAM_ORDER.includes(SAVED_STATE.teams.core)) document.getElementById("sel-core").value = SAVED_STATE.teams.core;
+      if (SAVED_STATE.teams.mid && TEAM_ORDER.includes(SAVED_STATE.teams.mid)) document.getElementById("sel-mid").value = SAVED_STATE.teams.mid;
+      if (SAVED_STATE.teams.support && TEAM_ORDER.includes(SAVED_STATE.teams.support)) document.getElementById("sel-support").value = SAVED_STATE.teams.support;
+    }
 
     function computeRanking(players, count = 3) {
       const n = players.length || 1;
@@ -1148,7 +1195,7 @@
     initBanners("Support", "banners-support");
 
     ["sel-core", "sel-mid", "sel-support"].forEach(id => {
-      document.getElementById(id).addEventListener("change", render);
+      document.getElementById(id).addEventListener("change", () => { saveState(); render(); });
     });
 
     render();
