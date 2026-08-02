@@ -170,6 +170,63 @@
       background: var(--c-cerulean);
     }
 
+    .stat-priority {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+      padding: 9px 10px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+    }
+
+    .priority-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    .priority-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .priority-swatch {
+      width: 7px;
+      height: 7px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .priority-swatch.red {
+      background: var(--stat-red);
+    }
+
+    .priority-swatch.green {
+      background: var(--stat-green);
+    }
+
+    .priority-swatch.blue {
+      background: var(--stat-blue);
+    }
+
+    .priority-chain {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .priority-chain b {
+      color: var(--text);
+      font-weight: 600;
+    }
+
     .banner-group {
       display: flex;
       flex-direction: column;
@@ -661,18 +718,21 @@
     <section class="app-section">
       <div class="picker-row">
         <div class="picker">
+          <div class="stat-priority" id="priority-core"></div>
           <div class="banner-group" id="banners-core"></div>
           <div class="suggestion" id="suggest-core"></div>
           <div class="picker-label"><span class="role-dot core"></span>Core team</div>
           <select id="sel-core"></select>
         </div>
         <div class="picker">
+          <div class="stat-priority" id="priority-mid"></div>
           <div class="banner-group" id="banners-mid"></div>
           <div class="suggestion" id="suggest-mid"></div>
           <div class="picker-label"><span class="role-dot mid"></span>Mid team</div>
           <select id="sel-mid"></select>
         </div>
         <div class="picker">
+          <div class="stat-priority" id="priority-support"></div>
           <div class="banner-group" id="banners-support"></div>
           <div class="suggestion" id="suggest-support"></div>
           <div class="picker-label"><span class="role-dot support"></span>Support team</div>
@@ -930,7 +990,32 @@
       }
     };
 
-    // Banner colors per role, in display order. "Blue" for Mid has no usable data (disclaimer only).
+    // Pre-ranked stat priority per role/color, ordered by Average points (highest first) per the guide.
+    const STAT_PRIORITY = {
+      Core: {
+        Red: ["Creeps", "GPM", "Deaths", "Towers", "Kills", "Madstones"],
+        Green: ["Teamfight", "Roshan", "Tormentor", "Stuns", "First Blood", "Courier"]
+      },
+      Mid: {
+        Red: ["Deaths", "GPM", "Creeps", "Kills", "Madstones", "Towers"],
+        Green: ["Teamfight", "Tormentor", "Stuns", "Roshan", "Courier", "First Blood"]
+      },
+      Support: {
+        Blue: ["Wards", "Smokes", "Camps Stacked", "Watchers", "Lotuses", "Runes"],
+        Green: ["Teamfight", "Tormentor", "Stuns", "Courier", "First Blood", "Roshan"]
+      }
+    };
+
+    function renderPriority(role, containerId) {
+      const colors = [...new Set(ROLE_BANNERS[role])].filter(c => STAT_PRIORITY[role][c]);
+      const el = document.getElementById(containerId);
+      const rows = colors.map(color => `
+    <div class="priority-row">
+      <span class="priority-swatch ${color.toLowerCase()}"></span>
+      <span class="priority-chain">${STAT_PRIORITY[role][color].join(" > ")}</span>
+    </div>`).join("");
+      el.innerHTML = `<div class="priority-title">Stat priority (by avg pts)</div>${rows}`;
+    }
     const ROLE_BANNERS = {
       Core: ["Red", "Green", "Red"],
       Mid: ["Red", "Blue", "Green"],
@@ -1189,6 +1274,10 @@
       renderSuggestion("Mid", "suggest-mid", "sel-mid");
       renderSuggestion("Support", "suggest-support", "sel-support");
     }
+
+    renderPriority("Core", "priority-core");
+    renderPriority("Mid", "priority-mid");
+    renderPriority("Support", "priority-support");
 
     initBanners("Core", "banners-core");
     initBanners("Mid", "banners-mid");
