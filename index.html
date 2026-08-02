@@ -173,7 +173,6 @@
     .stat-priority {
       display: flex;
       flex-direction: column;
-      gap: 6px;
       margin-bottom: 14px;
       padding: 9px 10px;
       background: var(--panel-alt);
@@ -187,7 +186,35 @@
       letter-spacing: .1em;
       text-transform: uppercase;
       color: var(--text-dim);
-      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .priority-chevron {
+      font-size: 13px;
+      color: var(--c-elemental);
+      line-height: 1;
+      font-weight: 700;
+      transition: transform .15s ease;
+      flex-shrink: 0;
+    }
+
+    .stat-priority:not(.collapsed) .priority-chevron {
+      transform: rotate(180deg);
+    }
+
+    .priority-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .stat-priority.collapsed .priority-body {
+      display: none;
     }
 
     .priority-row {
@@ -990,19 +1017,20 @@
       }
     };
 
-    // Pre-ranked stat priority per role/color, ordered by Average points (highest first) per the guide.
+    // Stat priority per role/color, exactly as emphasized in the guide (not just alphabetic rank order).
     const STAT_PRIORITY = {
       Core: {
-        Red: ["Creeps", "GPM", "Deaths", "Towers", "Kills", "Madstones"],
-        Green: ["Teamfight", "Roshan", "Tormentor", "Stuns", "First Blood", "Courier"]
+        Red: "Creeps >> GPM > Deaths (for stable result) / Towers (if you want to risk) > Kills > Madstones",
+        Green: "Roshan > Teamfight > Tormentor >>> Stuns >>> Courier kills / FB"
       },
       Mid: {
-        Red: ["Deaths", "GPM", "Creeps", "Kills", "Madstones", "Towers"],
-        Green: ["Teamfight", "Tormentor", "Stuns", "Roshan", "Courier", "First Blood"]
+        Red: "Creeps > GPM > Deaths (stability) / Kills (risk) >> Madstones > Towers",
+        Green: "Teamfight > Stuns (stable) / Tormentor (risk) >>> Roshan >>> Courier Kills / FB",
+        Blue: "Runes >>> Camps / Lotuses >>> Everything else"
       },
       Support: {
-        Blue: ["Wards", "Smokes", "Camps Stacked", "Watchers", "Lotuses", "Runes"],
-        Green: ["Teamfight", "Tormentor", "Stuns", "Courier", "First Blood", "Roshan"]
+        Blue: "Wards / Smokes > Lotuses / Camps >> Watchers >>> Runes",
+        Green: "Teamfight > Tormentor > Courier kills > Stuns >>> FB / Roshan"
       }
     };
 
@@ -1012,9 +1040,15 @@
       const rows = colors.map(color => `
     <div class="priority-row">
       <span class="priority-swatch ${color.toLowerCase()}"></span>
-      <span class="priority-chain">${STAT_PRIORITY[role][color].join(" > ")}</span>
+      <span class="priority-chain">${STAT_PRIORITY[role][color]}</span>
     </div>`).join("");
-      el.innerHTML = `<div class="priority-title">Stat priority (by avg pts)</div>${rows}`;
+      el.classList.add("collapsed");
+      el.innerHTML = `
+    <div class="priority-title">Stat priority (per the guide) <span class="priority-chevron">▾</span></div>
+    <div class="priority-body">${rows}</div>`;
+      el.querySelector(".priority-title").addEventListener("click", () => {
+        el.classList.toggle("collapsed");
+      });
     }
     const ROLE_BANNERS = {
       Core: ["Red", "Green", "Red"],
