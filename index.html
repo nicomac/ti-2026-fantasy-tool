@@ -27,6 +27,10 @@
       --c-royal: #6366f1;
       --c-elemental: #2dd4bf;
       --c-crimson: #ef4444;
+
+      --stat-red: #ef4444;
+      --stat-green: #22c55e;
+      --stat-blue: #38bdf8;
     }
 
     * {
@@ -164,6 +168,165 @@
 
     .role-dot.support {
       background: var(--c-cerulean);
+    }
+
+    .banner-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 6px 8px;
+    }
+
+    .banner-swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .banner-swatch.red {
+      background: var(--stat-red);
+    }
+
+    .banner-swatch.green {
+      background: var(--stat-green);
+    }
+
+    .banner-swatch.blue {
+      background: var(--stat-blue);
+    }
+
+    .banner select {
+      flex: 1;
+      padding: 5px 26px 5px 8px;
+      font-size: 13px;
+      border: none;
+      background-color: transparent;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b93a3' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    .banner-pct-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+      border-left: 1px solid var(--border);
+      padding-left: 7px;
+    }
+
+    .banner-pct {
+      width: 36px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: right;
+      padding: 2px 0;
+      -moz-appearance: textfield;
+    }
+
+    .banner-pct::-webkit-outer-spin-button,
+    .banner-pct::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .banner-pct:focus {
+      outline: none;
+    }
+
+    .banner-pct-sign {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .banner.disabled {
+      color: var(--text-dim);
+      font-size: 12px;
+      font-style: italic;
+      padding: 8px;
+    }
+
+    .suggestion {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--panel-alt);
+      border: 1px dashed var(--border);
+      border-radius: 7px;
+      padding: 10px 10px 8px;
+    }
+
+    .suggestion-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .suggestion-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .suggestion-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .suggestion-text b {
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .suggestion-rank {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-right: 4px;
+    }
+
+    .suggestion-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--c-elemental);
+    }
+
+    .suggestion-btn {
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--bg);
+      background: var(--c-elemental);
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .suggestion-btn:hover {
+      opacity: .85;
     }
 
     select {
@@ -491,14 +654,20 @@
     <section class="app-section">
       <div class="picker-row">
         <div class="picker">
+          <div class="banner-group" id="banners-core"></div>
+          <div class="suggestion" id="suggest-core"></div>
           <div class="picker-label"><span class="role-dot core"></span>Core team</div>
           <select id="sel-core"></select>
         </div>
         <div class="picker">
+          <div class="banner-group" id="banners-mid"></div>
+          <div class="suggestion" id="suggest-mid"></div>
           <div class="picker-label"><span class="role-dot mid"></span>Mid team</div>
           <select id="sel-mid"></select>
         </div>
         <div class="picker">
+          <div class="banner-group" id="banners-support"></div>
+          <div class="suggestion" id="suggest-support"></div>
           <div class="picker-label"><span class="role-dot support"></span>Support team</div>
           <select id="sel-support"></select>
         </div>
@@ -621,6 +790,243 @@
       "Xtreme Gaming", "Team Spirit", "TEAM VISION", "Nigma Galaxy", "HULIGANI", "Team Resilience",
       "Vici Gaming", "OG", "GamerLegion", "LGD Gaming"];
 
+    // ---- Stat category tables (Red / Green / Blue), per role ----
+    const STAT_NAMES = {
+      Red: ["GPM", "Deaths", "Creeps", "Madstones", "Kills", "Towers"],
+      Green: ["Teamfight", "Stuns", "Tormentor", "Roshan", "First Blood", "Courier"],
+      Blue: ["Wards", "Camps Stacked", "Lotuses", "Watchers", "Runes", "Smokes"]
+    };
+
+    function buildStatTable(rows, statNames) {
+      const table = {};
+      rows.forEach(row => {
+        const [team, ...vals] = row;
+        table[team] = Object.fromEntries(statNames.map((s, i) => [s, vals[i]]));
+      });
+      return table;
+    }
+
+    const STAT_DATA = {
+      Core: {
+        Red: buildStatTable([
+          ["Team Resilience", 2539, 2925, 2334, 1247, 1585, 1624],
+          ["TEAM VISION", 2723, 2677, 2539, 1293, 1609, 1696],
+          ["LGD Gaming", 2644, 2359, 2753, 1403, 1639, 1017],
+          ["Team Yandex", 2668, 2643, 2563, 1374, 1478, 1256],
+          ["BoomBoys", 2574, 2501, 2548, 1317, 1350, 1555],
+          ["Team Falcons", 2637, 2275, 2638, 958, 1586, 1488],
+          ["Xtreme Gaming", 2550, 2436, 2744, 1371, 1236, 1448],
+          ["Aurora Gaming", 2586, 2606, 2289, 1197, 1568, 1238],
+          ["Iron Wing", 2680, 2227, 2648, 1250, 1476, 1241],
+          ["Team Spirit", 2593, 2216, 2471, 1175, 1462, 1387],
+          ["Vici Gaming", 2461, 2407, 2549, 1252, 1177, 1309],
+          ["GamerLegion", 2492, 2161, 2438, 1226, 1343, 1310],
+          ["Team Liquid", 2475, 2287, 2423, 953, 1390, 1319],
+          ["HULIGANI", 2487, 2240, 2337, 1103, 1093, 1354],
+          ["OG", 2449, 2541, 2471, 1138, 1128, 1098],
+          ["Nigma Galaxy", 2329, 2020, 2057, 892, 1407, 708]
+        ], STAT_NAMES.Red),
+        Green: buildStatTable([
+          ["Team Resilience", 2941, 554, 1893, 1082, 447, 270],
+          ["TEAM VISION", 2608, 607, 1222, 1117, 487, 263],
+          ["LGD Gaming", 2728, 642, 1372, 1261, 427, 481],
+          ["Team Yandex", 2654, 597, 1447, 1126, 504, 395],
+          ["BoomBoys", 2627, 530, 1534, 1281, 432, 236],
+          ["Team Falcons", 2544, 596, 1507, 1114, 312, 572],
+          ["Xtreme Gaming", 2595, 597, 1482, 962, 392, 343],
+          ["Aurora Gaming", 2645, 655, 1363, 1075, 355, 307],
+          ["Iron Wing", 2620, 484, 1378, 1004, 323, 464],
+          ["Team Spirit", 2596, 610, 1356, 991, 450, 388],
+          ["Vici Gaming", 2599, 674, 1512, 1101, 354, 171],
+          ["GamerLegion", 2593, 616, 1114, 897, 542, 296],
+          ["Team Liquid", 2606, 688, 1433, 829, 300, 272],
+          ["HULIGANI", 2595, 688, 1103, 729, 232, 285],
+          ["OG", 2793, 385, 843, 666, 389, 309],
+          ["Nigma Galaxy", 2742, 803, 859, 379, 333, 462]
+        ], STAT_NAMES.Green)
+      },
+      Mid: {
+        Red: buildStatTable([
+          ["Team Liquid", 1267, 1262, 1212, 521, 894, 478],
+          ["Team Falcons", 1215, 1122, 1161, 532, 837, 383],
+          ["BoomBoys", 1228, 1273, 1213, 536, 831, 345],
+          ["Nigma Galaxy", 1273, 1378, 1095, 405, 849, 525],
+          ["Team Resilience", 1104, 1425, 962, 616, 520, 217],
+          ["Aurora Gaming", 1239, 1414, 1170, 491, 852, 374],
+          ["Iron Wing", 1265, 1045, 1203, 255, 786, 439],
+          ["TEAM VISION", 1220, 1324, 1079, 442, 768, 405],
+          ["Vici Gaming", 1211, 1184, 1244, 570, 728, 258],
+          ["LGD Gaming", 1230, 1133, 1285, 484, 690, 499],
+          ["Team Spirit", 1220, 1147, 1182, 527, 847, 277],
+          ["Team Yandex", 1193, 1227, 1034, 369, 763, 429],
+          ["GamerLegion", 1236, 1270, 1170, 407, 867, 362],
+          ["Xtreme Gaming", 1154, 1178, 1159, 462, 673, 176],
+          ["HULIGANI", 1159, 1112, 1001, 397, 767, 194],
+          ["OG", 1080, 1224, 967, 453, 734, 281]
+        ], STAT_NAMES.Red),
+        Green: buildStatTable([
+          ["Team Liquid", 1483, 316, 500, 324, 107, 377],
+          ["Team Falcons", 1500, 494, 677, 330, 215, 193],
+          ["BoomBoys", 1487, 352, 579, 422, 132, 157],
+          ["Nigma Galaxy", 1450, 279, 324, 384, 127, 340],
+          ["Team Resilience", 1549, 278, 541, 270, 149, 324],
+          ["Aurora Gaming", 1446, 257, 302, 238, 106, 170],
+          ["Iron Wing", 1481, 451, 538, 313, 70, 285],
+          ["TEAM VISION", 1496, 312, 471, 297, 186, 174],
+          ["Vici Gaming", 1519, 311, 482, 172, 118, 257],
+          ["LGD Gaming", 1395, 292, 424, 437, 105, 102],
+          ["Team Spirit", 1480, 333, 447, 209, 49, 125],
+          ["Team Yandex", 1429, 393, 474, 258, 151, 239],
+          ["GamerLegion", 1488, 295, 367, 250, 75, 218],
+          ["Xtreme Gaming", 1539, 363, 473, 188, 74, 144],
+          ["HULIGANI", 1517, 344, 220, 195, 161, 281],
+          ["OG", 1557, 324, 312, 208, 147, 62]
+        ], STAT_NAMES.Green)
+      },
+      Support: {
+        Blue: buildStatTable([
+          ["LGD Gaming", 2260, 2349, 1755, 2418, 1403, 2016],
+          ["Team Yandex", 2012, 2038, 1365, 1850, 1013, 1704],
+          ["OG", 1962, 2334, 1468, 1961, 832, 1966],
+          ["Team Falcons", 2166, 1914, 1350, 1779, 957, 1904],
+          ["Xtreme Gaming", 2202, 1896, 1212, 1940, 844, 2013],
+          ["Iron Wing", 2133, 1869, 1176, 1915, 740, 1728],
+          ["Aurora Gaming", 2002, 1589, 1190, 1706, 793, 1858],
+          ["Nigma Galaxy", 1989, 1508, 1359, 1851, 695, 1896],
+          ["Team Liquid", 2069, 1766, 1163, 1618, 631, 1843],
+          ["Team Spirit", 2174, 1895, 1515, 1382, 659, 1729],
+          ["Vici Gaming", 2134, 1465, 1109, 2316, 853, 1813],
+          ["TEAM VISION", 2039, 1611, 1224, 1228, 768, 1841],
+          ["Team Resilience", 1881, 1841, 987, 1293, 690, 1887],
+          ["BoomBoys", 2190, 1240, 909, 1317, 729, 1965],
+          ["GamerLegion", 1904, 1681, 870, 1129, 758, 2014],
+          ["HULIGANI", 1894, 1449, 1034, 1255, 730, 1839]
+        ], STAT_NAMES.Blue),
+        Green: buildStatTable([
+          ["LGD Gaming", 2719, 852, 760, 149, 334, 1042],
+          ["Team Yandex", 2859, 766, 904, 116, 507, 808],
+          ["OG", 2836, 703, 678, 134, 294, 587],
+          ["Team Falcons", 2686, 749, 1066, 195, 335, 647],
+          ["Xtreme Gaming", 2863, 756, 800, 106, 496, 532],
+          ["Iron Wing", 2818, 904, 868, 64, 574, 495],
+          ["Aurora Gaming", 2763, 951, 932, 104, 484, 655],
+          ["Nigma Galaxy", 2754, 831, 971, 122, 504, 532],
+          ["Team Liquid", 2900, 726, 1128, 96, 458, 591],
+          ["Team Spirit", 2881, 1018, 697, 70, 400, 458],
+          ["Vici Gaming", 2922, 675, 693, 51, 288, 459],
+          ["TEAM VISION", 2777, 637, 831, 91, 396, 537],
+          ["Team Resilience", 2981, 547, 1010, 73, 60, 701],
+          ["BoomBoys", 2840, 862, 863, 124, 504, 380],
+          ["GamerLegion", 2809, 790, 751, 91, 432, 505],
+          ["HULIGANI", 2866, 690, 472, 18, 569, 477]
+        ], STAT_NAMES.Green)
+      }
+    };
+
+    // Banner colors per role, in display order. "Blue" for Mid has no usable data (disclaimer only).
+    const ROLE_BANNERS = {
+      Core: ["Red", "Green", "Red"],
+      Mid: ["Red", "Blue", "Green"],
+      Support: ["Blue", "Green", "Blue"]
+    };
+
+    const BANNER_STATE = {
+      Core: [{ stat: null, pct: 100 }, { stat: null, pct: 100 }, { stat: null, pct: 100 }],
+      Mid: [{ stat: null, pct: 100 }, { stat: null, pct: 100 }, { stat: null, pct: 100 }],
+      Support: [{ stat: null, pct: 100 }, { stat: null, pct: 100 }, { stat: null, pct: 100 }]
+    };
+
+    function initBanners(role, containerId) {
+      const colors = ROLE_BANNERS[role];
+      const container = document.getElementById(containerId);
+      container.innerHTML = colors.map((color, idx) => {
+        if (role === "Mid" && color === "Blue") {
+          return `<div class="banner disabled">No data available for this stat (Blue) — Runes or you cooked!</div>`;
+        }
+        const options = STAT_NAMES[color];
+        const state = BANNER_STATE[role][idx];
+        if (state.stat === null) state.stat = options[0];
+        return `
+      <div class="banner">
+        <span class="banner-swatch ${color.toLowerCase()}"></span>
+        <select data-role="${role}" data-idx="${idx}" data-field="stat" data-color="${color}">
+          ${options.map(o => `<option value="${o}" ${o === state.stat ? 'selected' : ''}>${o}</option>`).join("")}
+        </select>
+        <div class="banner-pct-wrap">
+          <input class="banner-pct" type="number" min="0" max="500" step="1"
+            data-role="${role}" data-idx="${idx}" data-field="pct" value="${state.pct}">
+          <span class="banner-pct-sign">%</span>
+        </div>
+      </div>`;
+      }).join("");
+
+      container.querySelectorAll("select, input.banner-pct").forEach(el => {
+        const evt = el.tagName === "SELECT" ? "change" : "input";
+        el.addEventListener(evt, (e) => {
+          const r = e.target.dataset.role;
+          const i = +e.target.dataset.idx;
+          const field = e.target.dataset.field;
+          if (field === "pct") {
+            const v = parseFloat(e.target.value);
+            BANNER_STATE[r][i].pct = isNaN(v) ? 0 : v;
+          } else {
+            BANNER_STATE[r][i].stat = e.target.value;
+          }
+          render();
+        });
+      });
+    }
+
+    function computeTeamSuggestion(role, count = 3) {
+      const colors = ROLE_BANNERS[role];
+      const activeBanners = colors
+        .map((color, idx) => ({ color, idx }))
+        .filter(b => STAT_DATA[role][b.color]); // skip colors with no data (Mid Blue)
+
+      if (activeBanners.length === 0) return [];
+
+      const scores = TEAM_ORDER.map(team => {
+        let score = 0;
+        activeBanners.forEach(b => {
+          const state = BANNER_STATE[role][b.idx];
+          const teamStats = STAT_DATA[role][b.color][team];
+          if (teamStats && state.stat) {
+            const rawVal = teamStats[state.stat] || 0;
+            score += rawVal * (state.pct / 100);
+          }
+        });
+        return { team, score };
+      });
+
+      scores.sort((a, b) => b.score - a.score);
+      return scores.slice(0, count);
+    }
+
+    function renderSuggestion(role, containerId, selectId) {
+      const top3 = computeTeamSuggestion(role, 3);
+      const el = document.getElementById(containerId);
+      if (top3.length === 0) { el.innerHTML = ""; return; }
+
+      const rows = top3.map((entry, idx) => `
+    <div class="suggestion-row">
+      <div class="suggestion-text">
+        <span class="suggestion-rank">${idx + 1}.</span>
+        <b>${entry.team}</b> <span class="suggestion-score">${Math.round(entry.score).toLocaleString()} pts</span>
+      </div>
+      <button class="suggestion-btn" type="button" data-target="${selectId}" data-team="${entry.team}">Use</button>
+    </div>`).join("");
+
+      el.innerHTML = `<div class="suggestion-title">Suggested teams</div>${rows}`;
+
+      el.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          document.getElementById(e.target.dataset.target).value = e.target.dataset.team;
+          render();
+        });
+      });
+    }
+
+
     function playersFor(team, role) {
       return PLAYERS.filter(p => p.team === team && p.role === role);
     }
@@ -726,7 +1132,15 @@
         ...playersFor(supportTeam, "Support")
       ];
       renderOverall(allPlayers);
+
+      renderSuggestion("Core", "suggest-core", "sel-core");
+      renderSuggestion("Mid", "suggest-mid", "sel-mid");
+      renderSuggestion("Support", "suggest-support", "sel-support");
     }
+
+    initBanners("Core", "banners-core");
+    initBanners("Mid", "banners-mid");
+    initBanners("Support", "banners-support");
 
     ["sel-core", "sel-mid", "sel-support"].forEach(id => {
       document.getElementById(id).addEventListener("change", render);
