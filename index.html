@@ -262,9 +262,11 @@
 
     .rank-total {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       flex-shrink: 0;
+      text-align: right;
+      white-space: nowrap;
     }
 
     .rank-bar {
@@ -330,20 +332,27 @@
     }
 
     .overall-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
       gap: 12px;
     }
 
+    .overall-chip {
+      flex: 0 1 calc(33.333% - 8px);
+      min-width: 200px;
+    }
+
     @media (max-width:900px) {
-      .overall-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .overall-chip {
+        flex-basis: calc(50% - 6px);
       }
     }
 
     @media (max-width:480px) {
-      .overall-grid {
-        grid-template-columns: 1fr;
+      .overall-chip {
+        flex-basis: 100%;
       }
     }
 
@@ -375,7 +384,7 @@
 
     .oc-total {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
     }
 
@@ -591,9 +600,11 @@
     ["sel-core", "sel-mid", "sel-support"].forEach(populateSelect);
 
     function computeRanking(players, count = 3) {
+      const n = players.length || 1;
       const totals = EMBLEMS.map(e => ({
         emblem: e,
         total: players.reduce((sum, p) => sum + p.stats[e], 0),
+        avg: players.reduce((sum, p) => sum + p.stats[e], 0) / n,
         perPlayer: players.map(p => ({ name: p.name, val: p.stats[e] }))
       }));
       totals.sort((a, b) => b.total - a.total || EMBLEMS.indexOf(a.emblem) - EMBLEMS.indexOf(b.emblem));
@@ -603,12 +614,11 @@
     function renderCard(roleLabel, dotClass, team, role) {
       const players = playersFor(team, role);
       const ranked = computeRanking(players);
-      const maxTotal = Math.max(...ranked.map(r => r.total), 1);
       const playerNames = players.map(p => p.name).join(" & ");
 
       const rankHtml = ranked.map((r, idx) => {
         const medal = ["1st", "2nd", "3rd"][idx];
-        const barWidth = (r.total / maxTotal * 100).toFixed(0);
+        const barWidth = Math.min(r.avg, 100).toFixed(0);
         const breakdown = r.perPlayer.map(pp => `<span>${pp.name}: <b>${pp.val}%</b></span>`).join("");
         return `
       <div class="rank-item">
@@ -618,7 +628,7 @@
             <span class="rank-swatch" style="background:${EMBLEM_COLOR[r.emblem]}"></span>
             <span class="rank-name">${r.emblem}</span>
           </div>
-          <span class="rank-total" style="color:${EMBLEM_COLOR[r.emblem]}">+${r.total}%</span>
+          <span class="rank-total" style="color:${EMBLEM_COLOR[r.emblem]}">${r.avg.toFixed(1)}% avg <span style="color:var(--text-dim);font-weight:500;">(sum ${r.total})</span></span>
         </div>
         <div class="rank-bar"><div class="rank-bar-seg" style="width:${barWidth}%;background:${EMBLEM_COLOR[r.emblem]}"></div></div>
         <div class="rank-breakdown">${breakdown}</div>
@@ -638,22 +648,21 @@
 
     function renderOverall(allPlayers) {
       const ranked = computeRanking(allPlayers, 5);
-      const maxTotal = Math.max(...ranked.map(r => r.total), 1);
 
       const chips = ranked.map((r, idx) => {
         const medal = ["1st pick", "2nd pick", "3rd pick", "4th pick", "5th pick"][idx];
-        const barWidth = (r.total / maxTotal * 100).toFixed(0);
+        const barWidth = Math.min(r.avg, 100).toFixed(0);
         const breakdown = r.perPlayer.map(pp => `<span>${pp.name}: <b>${pp.val}%</b></span>`).join("");
         return `
       <div class="overall-chip ${idx === 0 ? 'pick-1' : ''}" style="--pick-color:${EMBLEM_COLOR[r.emblem]}">
         <div class="oc-medal-row">
           <span class="oc-medal">${medal}</span>
-          <span class="oc-total" style="color:${EMBLEM_COLOR[r.emblem]}">+${r.total}%</span>
         </div>
         <div class="oc-name-row">
           <span class="oc-swatch" style="background:${EMBLEM_COLOR[r.emblem]}"></span>
           <span class="oc-name">${r.emblem}</span>
         </div>
+        <div class="oc-total" style="color:${EMBLEM_COLOR[r.emblem]}">${r.avg.toFixed(1)}% avg <span style="color:var(--text-dim);font-weight:500;">(sum ${r.total})</span></div>
         <div class="oc-bar"><div class="oc-bar-seg" style="width:${barWidth}%;background:${EMBLEM_COLOR[r.emblem]}"></div></div>
         <div class="oc-breakdown">${breakdown}</div>
       </div>`;
