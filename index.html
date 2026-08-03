@@ -511,6 +511,10 @@
       gap: 8px;
     }
 
+    .rank-value-row {
+      margin-top: 2px;
+    }
+
     .rank-name-wrap {
       display: flex;
       align-items: center;
@@ -542,12 +546,17 @@
       text-overflow: ellipsis;
     }
 
+    .emblem-bonus {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
     .rank-total {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12.5px;
       font-weight: 600;
-      flex-shrink: 0;
-      text-align: right;
       white-space: nowrap;
     }
 
@@ -787,6 +796,16 @@
       Royal: "var(--c-royal)",
       Elemental: "var(--c-elemental)",
       Crimson: "var(--c-crimson)"
+    };
+    const EMBLEM_BONUS = {
+      Otherworldly: 7,
+      Emerald: 6,
+      Golden: 8,
+      Heroic: 9,
+      Cerulean: 11,
+      Royal: 10,
+      Elemental: 8,
+      Crimson: 6
     };
 
     // name, team, role, [Otherworldly, Emerald, Golden, Heroic, Cerulean, Royal, Elemental, Crimson]
@@ -1235,8 +1254,10 @@
           <div class="rank-name-wrap">
             <span class="rank-medal">${medal}</span>
             <span class="rank-swatch" style="background:${EMBLEM_COLOR[r.emblem]}"></span>
-            <span class="rank-name">${r.emblem}</span>
+            <span class="rank-name">${r.emblem} <span class="emblem-bonus">(+${EMBLEM_BONUS[r.emblem]}%)</span></span>
           </div>
+        </div>
+        <div class="rank-value-row">
           <span class="rank-total" style="color:${EMBLEM_COLOR[r.emblem]}">${r.avg.toFixed(1)}% avg <span style="color:var(--text-dim);font-weight:500;">(sum ${r.total})</span></span>
         </div>
         <div class="rank-bar"><div class="rank-bar-seg" style="width:${barWidth}%;background:${EMBLEM_COLOR[r.emblem]}"></div></div>
@@ -1269,7 +1290,7 @@
         </div>
         <div class="oc-name-row">
           <span class="oc-swatch" style="background:${EMBLEM_COLOR[r.emblem]}"></span>
-          <span class="oc-name">${r.emblem}</span>
+          <span class="oc-name">${r.emblem} <span class="emblem-bonus">(+${EMBLEM_BONUS[r.emblem]}%)</span></span>
         </div>
         <div class="oc-total" style="color:${EMBLEM_COLOR[r.emblem]}">${r.avg.toFixed(1)}% avg <span style="color:var(--text-dim);font-weight:500;">(sum ${r.total})</span></div>
         <div class="oc-bar"><div class="oc-bar-seg" style="width:${barWidth}%;background:${EMBLEM_COLOR[r.emblem]}"></div></div>
